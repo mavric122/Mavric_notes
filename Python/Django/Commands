@@ -1,0 +1,186 @@
+Cтартуем сервер
+python manage.py runserver  
+Создаём новый проект
+django-admin startproject mysite
+
+Создаём новое приложение
+python manage.py startapp {тут имя проекта}
+например: 
+python manage.py startapp video
+
+Запускаем статику
+python manage.py collectstatic
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+Создаём страницу
+в views.py 
+импортируя сначала 
+from django.http import HttpResponse
+
+создаём функцию типа:
+def home(request):
+    return HttpResponse('Домашняя страница')
+
+функция должна принимать один аргумент(запрос) по умолчанию принято его называть “request”
+
+
+В urls.py создаём строку 
+path("home/", home),
+
+где первая часть это адрес после основного названия сайта (http://127.0.0.1:8000/) а вторая часть это его представление.(То как он будет виден в views).
+Для этого из модуля импортируется функция. Например:
+from mavric122.views import home
+
+импортировать много в строчку несколько фукнций, например 
+
+from mavric122.views import home,about,register…
+
+Также возможно импортировать только сам vies:
+
+from mavric122 import views
+и вызывать функцию как  
+path("home/", views.home),
+
+
+
+Создаём URLconfig
+Что бы в urls.py не было кучи одинаковых приставок в urlpatterns можно одинаковые части адреса сгруппировать в …
+В файле urls.py из основого раздела  в дополнительно в from django.urls import path импортируем include
+
+В разделе urlpatterns присваиваем к адресу такое определение:
+
+path('ki/', include('mavric122.urls'))
+
+ 
+Создаём в разделе проекта py файл urls.py
+В него импортируем 
+from django.urls import path
+from . import views    # точка в начале показвает что файл в этой же папке
+
+
+
+
+
+Динамический URL адрес
+В файле views.py создаём
+def nazvanie_func(request):
+
+В файле urls.py записываем 
+path('<parametrs_name>', views.nazvanie_func())
+ 
+И в views.py передаём переменную из urls.py
+def nazvanie_func(request,parametrs_name):
+
+и начинаем прописывать условия:
+
+def nazvanie_func(request,parametrs_name):
+    if parametrs_name == 'ki':
+        return HttpResponse ('Когнитивные искажения это ...')
+    elif parametrs_name == 'psiho':
+        return HttpResponse('Психожизнь это раздел о...')
+    else:
+        return HttpResponseNotFound('Неизвестная тема!')
+
+Если нужную страницу не находит из за / в конце адресной строки. Её можно выставить в файле urls.py добавив его в конце нашего параметра:
+path('<parametrs_name>/', views.nazvanie_func())
+
+
+
+
+Конвертеры роутов(словарь страниц и что они выдают)
+Что бы не городить кучу if elif else – все однотипные страницы можно записать в виде словаря (key:value). Для этого создаём в файле views.py переменную и туда в виде словаря всё записываем.
+site = {
+    "ki": "Когнитивные искажения это ...",
+    "psiho": "Психожизнь это раздел о..."
+}
+
+не забываем про запятую после каждого key:value
+и создаём функцию:
+def nazvanie_func(request, parametrs_name):
+    description = site.get(parametrs_name, None)
+    if description:
+        return HttpResponse(description)
+    else:
+        return HttpResponseNotFound('Неизвестная тема!')
+
+parameters_name  - это ключ из файла urls.py
+description – это переменная которую необходимо создать. Название любое.
+Не забываем после нашей переменной ввести .get()
+Если в переменной будет найден ключ – вернётся его значение.
+ None – это то что вернётся если значение не найдётся.
+
+
+
+
+Вывод ошибок
+В файле views.py в строке импорта 
+from django.http import HttpResponse
+
+мы дополнительно импортируем 
+
+HttpResponseNotFound
+
+И указываем: 
+
+else:
+    return HttpResponseNotFound('Тут какая ошибка')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Редирект
+
+В файле views.py в строке импорта 
+from django.http import HttpResponse
+
+мы дополнительно импортируем 
+HttpResponseRedirect
+
+И прописываем через if elif else
+return HttpResponseRedirect('/parametrs_name/{параметр куда перенаправлять}')
+
+слеш / перед именем параметра и после
+

@@ -4,7 +4,7 @@ obj = model.objects.get(id=id)
 obj.counter # и через точку можешь обращаться к атрибутам объекта
 
 Для Классов
-
+# Мы берём объект и сохраняем вго в переменную. Всё сработает при перезагрузке страницы.
 obj = Tovar.objects.get(pk=self.kwargs['tovar_id'])
 
 if obj.amount <= 0:
@@ -13,6 +13,24 @@ if obj.amount <= 0:
 if obj.amount > 0:
     obj.there_is = True
     obj.save()
+
+    
+Тоже самое только для POST объекта:
+    
+    
+class UpdateTovar(LoginRequiredMixin, UpdateView):
+form_class = TovarForm
+model = Tovar
+template_name = 'tovar/edit_tovar.html'
+
+def post(self, request, **kwargs):
+    request.POST = request.POST.copy()
+    if request.POST['amount'] != '0':
+        request.POST['there_is'] = "True"
+    else:
+        request.POST['there_is'] = "False"
+
+    return super(UpdateView, self).post(request, **kwargs)
 
 
 

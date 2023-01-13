@@ -24,6 +24,8 @@ model = Tovar
 template_name = 'tovar/edit_tovar.html'
 
 def post(self, request, **kwargs):
+    # Возвращает копию объекта, используя copy.deepcopy() из стандартной библиотеки Python. 
+    # Эта копия будет изменяемой, даже если оригинал таковым не являлся.
     request.POST = request.POST.copy()
     if request.POST['amount'] != '0':
         request.POST['there_is'] = "True"
